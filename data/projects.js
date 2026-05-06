@@ -114,6 +114,57 @@ window.DYAI_PROJECTS = [
   {
     id: "p04",
     number: "04",
+    slug: "media-intelligence-extension",
+    title: "Media Intelligence Extension",
+    category: "Browser Extension · Media Intelligence · Source Work",
+    status: "Code Phase / Chrome Extension",
+    year: "2025",
+    claim: "Eine Chrome Extension, die Videos in strukturierte Arbeitsnotizen, Links und sammelbare Wissensbausteine verwandelt.",
+    description: "Die Media Intelligence Extension ist ein Arbeitstool für schnelles Online-Arbeiten mit videobasierten Quellen. Sie fasst YouTube-Videos zusammen, extrahiert die wichtigsten Informationen und stellt relevante Links, Tools, Ressourcen und Entscheidungsmarker heraus. Statt Videos passiv zu konsumieren, verwandelt die Extension sie in strukturierte, speicherbare Outputs: Bullet Points, Tool-Listen, Build-Packs, Decision-Packs, Coach Notes oder Knowledge Notes. Alle wichtigen Links sind klickbar, sammelbar und können in einer persönlichen Library in gesonderten Ordnern gespeichert werden. Technisch ist das System als Chrome Extension mit Side Panel gebaut und perspektivisch nicht nur auf YouTube begrenzt, sondern auch für TikTok, Instagram und Facebook vorbereitet.",
+    howItWorks: [
+      "Der Nutzer öffnet ein Video oder Short-Form-Media im Browser.",
+      "Die Chrome Extension erkennt die Plattform und öffnet ein Side Panel.",
+      "Der Nutzer klickt aktiv auf Extract. Es findet keine automatische Extraktion ohne Nutzeraktion statt.",
+      "Bei YouTube wird die verfügbare Transcript- oder Textbasis extrahiert.",
+      "Bei TikTok, Instagram und Facebook kann Audio über ein Offscreen Document erfasst und verarbeitet werden.",
+      "Der Server verarbeitet die Daten mit einem AI-Provider wie Gemini Flash.",
+      "Das Ergebnis wird als strukturierter Output zurückgegeben: Zusammenfassung, wichtige Punkte, Links, Tools, Ressourcen oder Entscheidungslogik.",
+      "Der Nutzer kann relevante Links und Informationspakete in einer persönlichen Library speichern.",
+      "Gespeicherte Inhalte können in Ordnern bzw. Collections organisiert werden."
+    ],
+    forWhom: [
+      "Menschen, die viel mit YouTube-Videos, Tutorials, Talks, Produktdemos oder Online-Recherche arbeiten.",
+      "Entwickler, Founder, Researcher, Creator und Operator, die schnell aus Videoquellen verwertbare Informationen gewinnen wollen.",
+      "Nutzer, die Links, Tools und Ressourcen nicht mehr manuell aus Videos heraussuchen möchten.",
+      "Teams, die Online-Quellen in strukturierte Wissenssammlungen überführen wollen.",
+      "AI-native Worker, die Videoquellen als Teil ihres Research- und Entscheidungsworkflows nutzen."
+    ],
+    capabilities: [
+      "Chrome Extension auf Manifest V3", "Side Panel UI", "YouTube-Transcript-Extraction",
+      "Button-triggered Extraction", "Audio Capture für TikTok, Instagram und Facebook",
+      "Video Session Management", "Strukturierte AI-Zusammenfassungen",
+      "Outcome Modes: Knowledge / Build-Pack / Decision-Pack / Coach Notes / Tools / Stack",
+      "Klickbare Link- und Ressourcenextraktion", "Persönliche Library", "Ordner / Collections",
+      "Supabase Auth und Persistenz", "Node/Express Backend", "Gemini Flash Extraction",
+      "Plan Gating und Rate Limiting", "Stripe Upgrade Flow", "Dark/Light Theme Toggle"
+    ],
+    aiLayer: [
+      "Die Extension ist kein generischer Summarizer, sondern ein Precision-Extraction-Tool.",
+      "Die AI-Schicht extrahiert nur High-Signal-Inhalte: Tipps, Techniken, Tools, Ressourcen, Links, Entscheidungsregeln und konkrete Handlungspunkte.",
+      "Der AI-Output ist modusabhängig: Knowledge Notes, Build-Packs, Decision-Packs, Coach Notes, Tool-Listen oder Tech-Stack-Extraktion.",
+      "Secrets bleiben außerhalb der Extension. AI- und Transcription-Routen laufen über den First-Party-Server.",
+      "Serverseitige Prompts erzwingen kurze, bulletbasierte, handlungsnahe Outputs statt langer Fließtext-Zusammenfassungen."
+    ],
+    links: [
+      { label: "GitHub Repository", url: "https://github.com/VincBerlin/Extension-for-youtube-Instagram-Facebook-and-TikTok.git", type: "repo" }
+    ],
+    tags: ["Chrome Extension", "YouTube", "Media Intelligence", "Link Extraction", "Research Tool", "Supabase", "Gemini", "Side Panel"],
+    thumbnailCategory: "MediaExtension",
+    thumbnailSeed: "side-panel-extraction"
+  },
+  {
+    id: "p05",
+    number: "05",
     slug: "whatsorga",
     title: "WhatsOrga",
     category: "Semantic WhatsApp Organization · Memory System",
@@ -151,8 +202,8 @@ window.DYAI_PROJECTS = [
     thumbnailSeed: "semantic-chat-graph"
   },
   {
-    id: "p05",
-    number: "05",
+    id: "p06",
+    number: "06",
     slug: "coupletime",
     title: "CoupleTime",
     category: "Relationship Ritual Tool · Structured Dialogue",
@@ -191,8 +242,8 @@ window.DYAI_PROJECTS = [
     thumbnailSeed: "two-circles-dialogue"
   },
   {
-    id: "p06",
-    number: "06",
+    id: "p07",
+    number: "07",
     slug: "augmented-ops",
     title: "Augmented_Ops.INC",
     category: "Autonomous Service Agency Mesh · Holding System",

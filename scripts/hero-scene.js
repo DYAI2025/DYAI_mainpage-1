@@ -179,45 +179,69 @@
       this._raf = requestAnimationFrame(this._loop);
       const t = (now - this._t0) / 1000;
       const m = this.motion;
-      const sp = this.scrollProgress; // 0..1
+      // smooth scroll progress for buttery dolly/parallax
+      this._spEased = this._spEased == null ? this.scrollProgress : this._spEased;
+      this._spEased += (this.scrollProgress - this._spEased) * 0.09;
+      const sp = this._spEased;
+      // ease curve for non-linear scroll mapping (slow start, accelerate, settle)
+      const spE = sp < 0.5
+        ? 2 * sp * sp
+        : 1 - Math.pow(-2 * sp + 2, 2) / 2;
 
-      // mouse easing
-      this.mouse.x += (this.mouse.tx - this.mouse.x) * 0.06;
-      this.mouse.y += (this.mouse.ty - this.mouse.y) * 0.06;
+      // mouse easing — slightly snappier
+      this.mouse.x += (this.mouse.tx - this.mouse.x) * 0.075;
+      this.mouse.y += (this.mouse.ty - this.mouse.y) * 0.075;
 
-      // core rotation (slow, alive)
-      this.core.rotation.y = t * 0.14 * m + sp * 1.2;
-      this.core.rotation.x = Math.sin(t * 0.2 * m) * 0.18 + this.mouse.y * 0.18;
-      this.orbMesh.rotation.y = -t * 0.32 * m;
-      this.orb2Mesh.rotation.y = t * 0.18 * m;
-      this.orb2Mesh.rotation.z = -t * 0.06 * m;
-      this.ringMesh.rotation.z = t * 0.1 * m;
-      this.ring2Mesh.rotation.x = Math.PI / 1.6 + Math.sin(t * 0.3 * m) * 0.4;
+      // core rotation: layered figure-eight feel
+      this.core.rotation.y = t * 0.12 * m + spE * 1.6 + this.mouse.x * 0.25;
+      this.core.rotation.x = Math.sin(t * 0.18 * m) * 0.16 + this.mouse.y * 0.22 - spE * 0.18;
+      this.core.rotation.z = Math.sin(t * 0.11 * m) * 0.06;
+      // multi-axis spin on inner orbs
+      this.orbMesh.rotation.y = -t * 0.28 * m + spE * 0.8;
+      this.orbMesh.rotation.x = Math.sin(t * 0.17 * m) * 0.12;
+      this.orb2Mesh.rotation.y = t * 0.22 * m;
+      this.orb2Mesh.rotation.z = -t * 0.07 * m + spE * 0.4;
+      this.ringMesh.rotation.z = t * 0.09 * m + spE * 0.6;
+      this.ringMesh.rotation.x = Math.PI / 2.4 + Math.sin(t * 0.22 * m) * 0.18;
+      this.ring2Mesh.rotation.x = Math.PI / 1.6 + Math.sin(t * 0.3 * m) * 0.42;
+      this.ring2Mesh.rotation.z = Math.PI / 6 - t * 0.12 * m;
 
-      // breathing scale
-      const breath = 1 + Math.sin(t * 0.8 * m) * 0.012;
+      // breathing scale: pulse with scroll energy
+      const breath = 1 + Math.sin(t * 0.8 * m) * 0.015 + Math.sin(spE * Math.PI) * 0.04;
       this.core.scale.setScalar(breath);
 
-      // halo float
+      // wireframe expansion mid-scroll (sphere "breathes open")
+      const expand = 1 + Math.sin(spE * Math.PI) * 0.06;
+      this.orb2Mesh.scale.setScalar(expand);
+
+      // halo float — counter-rotate
       if (this.haloPoints) {
-        this.haloPoints.rotation.y = -t * 0.04 * m;
+        this.haloPoints.rotation.y = -t * 0.05 * m + spE * 0.3;
+        this.haloPoints.rotation.x = Math.sin(t * 0.13 * m) * 0.2;
       }
       if (this.particles) {
-        this.particles.rotation.y = t * 0.015 * m;
+        this.particles.rotation.y = t * 0.018 * m;
+        this.particles.rotation.x = -t * 0.008 * m;
       }
 
-      // scroll-driven camera dolly + parallax
-      const dolly = 8 - sp * 3.5;       // zoom in toward end
-      const lift = -sp * 0.6;            // slight tilt
-      this.camera.position.x = this.mouse.x * 0.4;
-      this.camera.position.y = this.mouse.y * -0.3 + lift;
+      // scroll-driven camera: dolly + arc + tilt with eased curve
+      const dolly = 8 - spE * 4.2;
+      const arcX = Math.sin(spE * Math.PI) * 0.6;
+      const lift = -spE * 0.7 + Math.sin(spE * Math.PI * 2) * 0.15;
+      this.camera.position.x = this.mouse.x * 0.45 + arcX;
+      this.camera.position.y = this.mouse.y * -0.32 + lift;
       this.camera.position.z = dolly;
-      this.camera.lookAt(0, 0, 0);
+      this.camera.lookAt(0, spE * -0.15, 0);
+      // subtle FOV breathing — feels like a zoom-in on key beat
+      this.camera.fov = 38 - Math.sin(spE * Math.PI) * 4;
+      this.camera.updateProjectionMatrix();
 
-      // accent intensity peaks mid-scroll
-      const peak = Math.sin(sp * Math.PI);
-      this.orbMat.opacity = 0.55 + peak * 0.4;
-      this.haloMat.opacity = 0.4 + peak * 0.5;
+      // accent intensity peaks mid-scroll, fades toward end
+      const peak = Math.sin(spE * Math.PI);
+      this.orbMat.opacity = 0.55 + peak * 0.42;
+      this.haloMat.opacity = 0.4 + peak * 0.55;
+      this.ring2Mat.opacity = 0.4 + peak * 0.45;
+      this.orb2Mat.opacity = 0.14 + peak * 0.18;
 
       this.renderer.render(this.scene, this.camera);
     }

@@ -51,4 +51,3 @@ In `data/projects.js` ein neues Objekt am Ende des `window.DYAI_PROJECTS`-Arrays
 - Procedurale SVG-Thumbnails (kein Bildbedarf)
 - CSS Custom Properties für Tokens
 - Reduced-Motion respektiert
-# DYAI_mainpage-1

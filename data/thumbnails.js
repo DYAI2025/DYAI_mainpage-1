@@ -321,8 +321,89 @@
     return `<g>${tick(8,8,"h")}${tick(8,8,"v")}${tick(w-16,8,"h")}${tick(w-1,8,"v")}${tick(8,h-1,"h")}${tick(8,h-16,"v")}${tick(w-16,h-1,"h")}${tick(w-1,h-16,"v")}</g>`;
   }
 
+  // ─────────── Media Intelligence Extension ───────────
+  // Browser frame · video tile · side panel extracting bullets, links, folders.
+  function mediaext(rng, w, h) {
+    let g = `<rect width="${w}" height="${h}" fill="#0e0e0c"/>`;
+    // browser window chrome
+    const bx = 30, by = 36, bw = w - 60, bh = h - 70;
+    g += `<rect x="${bx}" y="${by}" width="${bw}" height="${bh}" fill="rgba(239,233,220,0.03)" stroke="rgba(239,233,220,0.25)" stroke-width="0.8" rx="6"/>`;
+    // titlebar
+    g += `<rect x="${bx}" y="${by}" width="${bw}" height="22" fill="rgba(239,233,220,0.05)" rx="6"/>`;
+    [0,1,2].forEach((i)=>{ g += `<circle cx="${bx + 12 + i*12}" cy="${by + 11}" r="3.4" fill="rgba(239,233,220,0.${i===0?6:3})"/>`; });
+    g += `<rect x="${bx + 60}" y="${by + 5}" width="${bw - 80}" height="12" fill="rgba(239,233,220,0.06)" rx="6"/>`;
+    g += `<text x="${bx + bw/2 - 70}" y="${by + 14}" font-family="JetBrains Mono, monospace" font-size="8" fill="rgba(239,233,220,0.5)">video.url / watch?v=…</text>`;
+    // split: video left, side panel right
+    const splitX = bx + bw * 0.55;
+    // video tile
+    const vy = by + 32, vx = bx + 14;
+    const vw = splitX - vx - 14, vh = bh - 50;
+    g += `<rect x="${vx}" y="${vy}" width="${vw}" height="${vh * 0.62}" fill="#000" stroke="rgba(239,233,220,0.18)" stroke-width="0.6" rx="3"/>`;
+    // play triangle
+    const pcx = vx + vw / 2, pcy = vy + (vh * 0.62) / 2;
+    g += `<circle cx="${pcx}" cy="${pcy}" r="22" fill="rgba(216,87,42,0.18)" stroke="#d8572a" stroke-width="1.4"/>`;
+    g += `<polygon points="${pcx-6},${pcy-9} ${pcx-6},${pcy+9} ${pcx+9},${pcy}" fill="#d8572a"/>`;
+    // progress bar
+    g += `<rect x="${vx + 8}" y="${vy + vh*0.62 - 12}" width="${vw - 16}" height="3" fill="rgba(255,255,255,0.15)" rx="1.5"/>`;
+    g += `<rect x="${vx + 8}" y="${vy + vh*0.62 - 12}" width="${(vw - 16)*0.42}" height="3" fill="#d8572a" rx="1.5"/>`;
+    // transcript lines under video
+    const ty = vy + vh * 0.62 + 14;
+    for (let i = 0; i < 4; i++) {
+      g += `<rect x="${vx}" y="${ty + i * 9}" width="${vw - rng()*40 - 10}" height="2.5" fill="rgba(239,233,220,${0.18 + rng()*0.2})"/>`;
+    }
+    // side panel
+    const px = splitX, py = by + 32, pw = bx + bw - splitX - 14, ph = bh - 50;
+    g += `<rect x="${px}" y="${py}" width="${pw}" height="${ph}" fill="rgba(239,233,220,0.04)" stroke="rgba(216,87,42,0.5)" stroke-width="0.8" rx="3"/>`;
+    g += `<text x="${px + 12}" y="${py + 16}" font-family="JetBrains Mono, monospace" font-size="9" fill="#d8572a" letter-spacing="1.5">⊕ EXTRACT</text>`;
+    g += `<text x="${px + pw - 12}" y="${py + 16}" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="8" fill="rgba(239,233,220,0.45)" letter-spacing="1">SIDE PANEL</text>`;
+    // bullet notes
+    const bullets = [
+      { dot: "●", txt: "build-pack · 4 steps", w: 0.85 },
+      { dot: "●", txt: "tools mentioned: 3", w: 0.7 },
+      { dot: "●", txt: "decision rule extracted", w: 0.78 },
+      { dot: "●", txt: "key resource link", w: 0.66 }
+    ];
+    bullets.forEach((b, i) => {
+      const yy = py + 36 + i * 16;
+      g += `<circle cx="${px + 14}" cy="${yy - 3}" r="1.8" fill="#d8572a"/>`;
+      g += `<rect x="${px + 22}" y="${yy - 5}" width="${(pw - 36) * b.w}" height="3" fill="rgba(239,233,220,0.45)"/>`;
+      g += `<rect x="${px + 22}" y="${yy}" width="${(pw - 36) * (b.w * 0.6)}" height="2" fill="rgba(239,233,220,0.25)"/>`;
+    });
+    // link chips
+    const ly = py + 36 + bullets.length * 16 + 10;
+    g += `<text x="${px + 12}" y="${ly}" font-family="JetBrains Mono, monospace" font-size="7" letter-spacing="1.5" fill="rgba(239,233,220,0.5)">LINKS</text>`;
+    const chips = ["↗ docs", "↗ repo", "↗ tool"];
+    chips.forEach((c, i) => {
+      const cy = ly + 8;
+      const cwid = 44;
+      const cx0 = px + 12 + i * (cwid + 6);
+      g += `<rect x="${cx0}" y="${cy}" width="${cwid}" height="14" fill="rgba(216,87,42,0.12)" stroke="rgba(216,87,42,0.5)" stroke-width="0.6" rx="2"/>`;
+      g += `<text x="${cx0 + cwid/2}" y="${cy + 10}" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7" fill="#d8572a">${c}</text>`;
+    });
+    // folder collection chips
+    const fy = ly + 36;
+    g += `<text x="${px + 12}" y="${fy}" font-family="JetBrains Mono, monospace" font-size="7" letter-spacing="1.5" fill="rgba(239,233,220,0.5)">SAVE TO</text>`;
+    ["▢ research", "▢ stacks", "▢ ideas"].forEach((c, i) => {
+      const yy = fy + 10 + i * 14;
+      g += `<rect x="${px + 12}" y="${yy}" width="${pw - 24}" height="11" fill="rgba(239,233,220,0.04)" stroke="rgba(239,233,220,0.2)" stroke-width="0.5" rx="2"/>`;
+      g += `<text x="${px + 18}" y="${yy + 8}" font-family="JetBrains Mono, monospace" font-size="7" fill="rgba(239,233,220,0.65)">${c}</text>`;
+    });
+    // link node web (faint, between video and panel)
+    for (let i = 0; i < 5; i++) {
+      const x1 = vx + vw - 10 + rng() * 4;
+      const y1 = vy + 10 + rng() * (vh * 0.6);
+      const x2 = px + rng() * 8;
+      const y2 = py + 30 + rng() * (ph - 60);
+      g += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="rgba(216,87,42,0.25)" stroke-width="0.5"/>`;
+      g += `<circle cx="${x1}" cy="${y1}" r="1.4" fill="rgba(216,87,42,0.7)"/>`;
+      g += `<circle cx="${x2}" cy="${y2}" r="1.4" fill="rgba(216,87,42,0.7)"/>`;
+    }
+    return g;
+  }
+
   const renderers = {
     Bazodiac: bazodiac,
+    MediaExtension: mediaext,
     FuFirE: fufire,
     WhatsInIt: whatsinit,
     WhatsOrga: whatsorga,
