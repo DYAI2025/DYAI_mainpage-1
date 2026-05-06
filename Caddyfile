@@ -1,0 +1,18 @@
+:{$PORT:8080} {
+	root * /srv
+	encode zstd gzip
+	file_server
+	try_files {path} /DYAI Mainpage.html
+
+	@static path *.css *.js *.jsx *.svg *.woff2 *.png *.jpg *.webp
+	header @static Cache-Control "public, max-age=86400"
+
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+		X-Frame-Options SAMEORIGIN
+	}
+
+	# nice URL: redirect / to the page
+	redir / /DYAI%20Mainpage.html 302
+}
